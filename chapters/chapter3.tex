@@ -5,24 +5,24 @@ Light it up, tell me more, explore
 \end{savequote}
 
 \chapter{Exploratory Analysis}
-Before performing any modeling, we first examined the feasibility of two potential approaches to our problem in terms of the type of data used, a \textit{network-based} approach, using cover song data v. a \textit{content-based} approach, using song audio directly.
+Before performing any modeling, we first examined the feasibility of two potential approaches to our problem in terms of the type of data used, a \textit{network-based} approach, using cover song data vs. a \textit{content-based} approach, using song audio directly.
 
 \section{Analysis of Network Data}
 \subsection{AllMusic Influence Network}
 The AllMusic influence network is a sparse graph consisting of 16,704 artists and 93,065 influence relationships with each artist having an average of 5.57 followers. Both the indegree and degree distributions are heavily right skewed, which makes intuitive sense as most artists have relatively few followers, while extremely influential artists have many followers.
 
-\begin{figure}
+\begin{figure}[H]
 \includegraphics[width=\textwidth]{figures/allmusic_degree_distribution.png}
 \caption{Degree distributions for AllMusic influence network}
 \end{figure}
 
 \subsubsection*{Highest Out-Degree Artists}
-Ordered by degree, the top 25 artists that directly influenced the highest number of followers are listed in Table 1, followed by the count of artists they influenced.
+Ordered by degree, the top 25 artists that directly influenced the highest number of followers are listed in Table 3.1.1, followed by the count of artists they influenced.
 
 
 \begin{table}[H]
 \centering
-\caption{Artists with highest degree in AllMusic influence network}
+\caption{Artists with highest out-degree in AllMusic influence network}
 \label{my-label}
 \begin{tabular}{lr}
 \hline
@@ -59,6 +59,47 @@ Ordered by degree, the top 25 artists that directly influenced the highest numbe
 
 The genre of rock has the highest representation in this list, with artists from jazz, electronic and pop appearing as well.
 
+\subsubsection*{PageRank}
+Since outdegree only takes into account first-order relationships in a graph, we also computed PageRank \cite{page1999pagerank} over the AllMusic influence graph. Edge directionality in the graph was reversed before applying PageRank (yielding follower to influencer directed edges), since the ``authorities'' in this specific context are the influencers. Originally devised to rank website importance, PageRank computes the stationary distribution of a random walk over a network graph. The resulting PageRank vector is a vector of probabilities which sums to $1$, with the corresponding PageRank value for each node indicating the proportion of time expected to be spent at that node during such a random walk. The top 25 artists in terms of PageRank are summarized in the table below:
+
+
+\begin{table}[H]
+\centering
+\caption{Artists with highest PageRank in AllMusic influence network}
+\begin{tabular}{lr}
+\hline
+ Artist                 &   PageRank \\
+\hline
+ Louis Armstrong        & 0.00723579 \\
+ Scott Joplin           & 0.00692252 \\
+ The Beatles            & 0.00642019 \\
+ Charley Patton         & 0.00484325 \\
+ Jelly Roll Morton      & 0.00465115 \\
+ Uncle Dave Macon       & 0.00447063 \\
+ Fats Waller            & 0.00427571 \\
+ Bob Dylan              & 0.00374972 \\
+ Jimmie Rodgers         & 0.00357579 \\
+ James Brown            & 0.00350958 \\
+ King Oliver            & 0.00336848 \\
+ James P. Johnson       & 0.0031979  \\
+ Duke Ellington         & 0.00317865 \\
+ Chuck Berry            & 0.00305074 \\
+ Louis Jordan           & 0.00303284 \\
+ W.C. Handy             & 0.00298179 \\
+ Mike Walbridge         & 0.00292283 \\
+ The Rolling Stones     & 0.00287099 \\
+ Blind Lemon Jefferson  & 0.002761   \\
+ The Mills Brothers     & 0.00270951 \\
+ The Velvet Underground & 0.00265675 \\
+ Bessie Smith           & 0.00249454 \\
+ Little Richard         & 0.00246647 \\
+ Hobart Smith           & 0.00245348 \\
+ Jimi Hendrix           & 0.00242845 \\
+\hline
+\end{tabular}
+\end{table}
+
+Though there is overlap between the respective top 25 artists for out-degree and PageRank (The Beatles and The Rolling Stones for instance), as expected PageRank does uncover artists who do not necessarily have high outdegree but are nevertheless authoritative in terms of being influences of artists who themselves are influential. For example, the table above includes pivotal figures in 20th century music such as Louis Armstrong, Charlie Patton, and Chuck Berry, who would be missed by a simple out-degree analysis.
 
 \subsubsection*{Breakdown by Genre}
 \begin{table}[H]
@@ -95,7 +136,7 @@ Holiday        &    0.000060 \\
 \end{tabular}
 \end{table}
 
-Unsurprisingly, we see that Pop/Rock is over represented in this data set, followed by Jazz R\&B, Rap, Electronic and Country. 6.5\% of artists do not have genre labels associated with them.
+Unsurprisingly, we see that Pop/Rock is overrepresented in this data set, followed by Jazz, R\&B, Rap, Electronic and Country. 6.5\% of artists do not have genre labels associated with them.
 
 \subsubsection{Influence Between Genres}
 To visualize the amount of influence between genres as represented by the AllMusic influence graph, we created the heatmap in the figure below:
@@ -115,7 +156,7 @@ We observe that:
     \item Blues influences Jazz, Pop/Rock and R\&B, which is consistent with conventional wisdom
 \end{itemize}
 
-It is important to note the limitations of using genre information from AllMusic. First, we note that Pop/Rock are lumped into one category, which is not ideal as two discrete categories for the two genres would be more informative. Secondly, since AllMusic reflects popular music tastes across the past century, we see over-representation of artists from genres such as Jazz and Pop/Rock in the influence graph, which skews results in the heatmap as well.
+It is important to note the limitations of using genre information from AllMusic. First, we observe that Pop/Rock are lumped into one category, which is not ideal as two discrete categories for the two genres would be more informative. Secondly, since AllMusic reflects popular music tastes across the past century, we see over-representation of artists from genres such as Jazz and Pop/Rock in the influence graph, which skews results in the heatmap as well.
 
 \subsection{SecondHandSongs Covers}
 After dropping covers with missing performer and release date information from the SHS cover data, we were left with 644,786 total versions (covers) of 86,827 unique works from 77,328 unique artists.
@@ -228,9 +269,9 @@ The node (artist name) overlap between the two datasets is 63.69\%, which is com
 We also calculated edge overlap between the two datasets. Since the collaboration network is undirected, for each undirected edge $(u,v)$ in the graph, we introduced two directed edges $(u,v)$ and $(v,u)$ for the purpose of calculating overlap. The calculated overlap is 3.53\%, which is far lower than the overlap between the influence network and cover songs data. This simple heuristic suggests that collaboration relationships are not especially directly predictive of influence relationships, which is reasonable given that many musicians never get the opportunity to record with their influences.
 
 \subsection{Limitations of Network-based Approach}
-Regardless of the method used to construct a network out of cover song data, whether one of the heuristics mentioned in 3.4 or a cascade-based influence algorithm such as in \cite{gomez2010inferring}, the use of cover song data arguably poses two fundamental challenges in influence inference, which we will refer to as the \textbf{standards effect} and the \textbf{career cover artist effect}.
+Regardless of the method used to construct a network out of cover song data, whether one of the heuristics mentioned in 3.1.4 or a cascade-based influence algorithm such as in \cite{gomez2010inferring}, the use of cover song data arguably poses two fundamental challenges in influence inference, which we will refer to as the \textbf{standards effect} and the \textbf{career cover artist effect}.
 
-By the standards effect, we mean that certain songs are covered very often simply because they are a common part of the repertoire (think Christmas songs or jazz standards). This behavior obscures true influence relationships and is commonly referred to in network terminology as \textbf{herding}. Evidence for this phenomenon can be seen in Table 4, where we see that many of the most covered works are precisely Christmas songs or jazz standards. By the career cover artist effect, we refer to the fact that certain artists almost exclusively record cover songs, where the covers are often recorded for commercial reasons or other non-influence reasons.
+By the standards effect, we mean that certain songs are covered very often simply because they are a common part of the repertoire (think Christmas songs or jazz standards). This behavior obscures true influence relationships and is commonly referred to in network terminology as \textbf{herding}. Evidence for this phenomenon can be seen in Table 3.1.5, where we see that many of the most covered works are precisely Christmas songs or jazz standards. By the career cover artist effect, we refer to the fact that certain artists almost exclusively record cover songs, where the covers are often recorded for commercial reasons or other non-influence reasons.
 
 These issues could be dealt with through certain heuristics, for example removing songs that have over a certain number of covers. However, combined with the poor node overlap issue, perhaps this suggests that a network-based approach using cover songs is not the best way to address our task due to the underlying signal being too weak.
 
@@ -238,14 +279,14 @@ These issues could be dealt with through certain heuristics, for example removin
 \subsection{Coverage}
 Since we scraped the audio data directly from the AllMusic website matching on the unique Artist identifier for the site, we did not run into the coverage overlap issues that we did with the cover song or collaboration datasets. We were able to collect audio clips for 92.55\% of artists in the AllMusic influence network, which accounts for 95.64\% of the influence edges in the ground truth influence dataset. 
 
-We were able to extract a mean of 9.29 30-second long clips per artist, with less than 14\% of artists having less than 10 audio clips and less than 7\% having less than 5 clips. In total, 143,625 clips of audio were collected.
+We were able to extract a mean of 9.29 30-second long clips per artist, with less than 14\% of artists having fewer than 10 audio clips and less than 7\% having fewer than 5 clips. In total, 143,625 clips of audio were collected.
 
 \subsection{Intermediate Feature Representation}
-The raw audio files are far too large to use directly and high-level engineered features such as those used in \cite{shalit2013modeling} can be overly lossy. Therefore we struck a balance between these extremes through the use of 2 types of intermediate time-frequency feature representations commonly \cite{van2013deep} used in audio signal processing, \textbf{Mel-Spectrograms} and \textbf{Mel-frequency Cepstral Coefficients} (\textbf{MFCCs}). The \textbf{mel scale} performs a logarithmic transformation of frequencies to more closely approximate the way humans perceive pitch distances.
+For our exploratory analysis, the raw audio files were far too large to use directly and high-level engineered features such as those used in \cite{shalit2013modeling} can be overly lossy. Therefore we struck a balance between these extremes through the use of 2 types of intermediate time-frequency feature representations commonly \cite{van2013deep} used in audio signal processing, \textbf{mel-spectrograms} and \textbf{mel-frequency cepstral coefficients} (\textbf{MFCCs}). The \textbf{mel scale} performs a logarithmic transformation of frequencies to more closely approximate the way humans perceive pitch distances.
 
 \begin{figure}[H]
 \includegraphics[width=\textwidth]{figures/melspec.png}
-\caption{Example of Mel-Spectrogram representation of audio file}
+\caption{Example of mel-spectrogram representation of audio file}
 \end{figure}
 
 \begin{figure}[H]
@@ -253,11 +294,12 @@ The raw audio files are far too large to use directly and high-level engineered 
 \caption{Example of MFCC representation of audio file}
 \end{figure}
 
+Practically, both the mel-spectrogram and MFCC representation of a given song are 2-dimensional arrays of floating-point numbers with the first dimension corresponding to the frequency domain and the second dimension corresponding to the time domain. 
 
 \subsection{Dimensionality Reduction with PCA}
 We used Principal Component Analysis (PCA) for dimensionality reduction. PCA takes a set of data and transforms it into a new orthonormal coordinate system where the first coordinate (first principal component) explains the most variance, the second principal component explains the second most variance and so on.
 
-Taking the MFCC features corresponding to the first AllMusic audio sample for each artist, we extracted the first 2 principal components, which together explained approximately 55 percent of the variance in the data. We then visualized the projection of the MFCC features onto the first two principal components, colored by genre and with text labels for the top 3 highest out-degree artists per genre. For increased readability, we only included data points from the 7 most popular genres in terms of total number of artists. The visualization can be seen in Figure 4.
+Taking the MFCC features corresponding to the first AllMusic audio sample for each artist, we extracted the first 2 principal components, which together explained approximately 55 percent of the variance in the data. We then visualized the projection of the MFCC features onto the first two principal components, colored by genre and with text labels for the top 3 highest out-degree artists per genre. For increased readability, we only included data points from the 7 most popular genres in terms of total number of artists. The visualization can be seen in Figure 3.2.3.
 
 \newpage
 \begin{figure}[H]
@@ -270,13 +312,13 @@ Taking the MFCC features corresponding to the first AllMusic audio sample for ea
 Note that we only used one 30 second clip to represent each artist, but even so there are readily discernible patterns. The highest degree Rap artists, N.W.A., Run-D.M.C. and Public Enemy are all localized to the top left of the plot, where there appears to be a large cluster of other Rap artists. The Jazz genre seems to be predominantly located in the right half of the plot while the bulk of R\&B is located between Rap and Jazz, which is consistent with both the chronology and stylistic progression relationship between these three genres.
 
 \subsection{Relationship Between Influence Graph Distance \& Euclidean Distance on PC Projection}
-We also investigated the relationship between node distance in the AllMusic Influence Graph and Euclidean distance in the principal component projection. To do this we computed the average Euclidean distance in the principal component projection between each artist and all descendants at BFS distance exactly $d$ followers away in the influence graph for increasing values of $d$. 
+We also investigated the relationship between node distance in the AllMusic Influence Graph and Euclidean distance in the principal component projection. To do this we computed the average Euclidean distance in the principal component projection between each artist and all descendants at breadth-first search (BFS) distance exactly $d$ followers away in the influence graph for increasing values of $d$. 
 
 \begin{figure}[H]
 \includegraphics[width=10cm]{figures/distance_by_bfs.png}
-\caption{Average Euclidean distance between nodes in PC plot v. BFS depth in influence graph}
+\caption{Average Euclidean distance between nodes in PC plot vs. BFS depth in influence graph}
 \end{figure}
 
 We see that mean Euclidean distance roughly increases with increasing BFS depth, which provides evidence that the PCA projection structure approximately corresponds to the influence network in terms of influencer-follower distance. 
 
-Overall, from our exploratory analysis we saw that there were many limitations to using a network-based approach and that the content-based approach appeared more promising. Therefore, we decided to focus on content-based approaches, which will be the focus of the remainder of this thesis.
+Overall, from our exploratory analysis we saw that there were many limitations to using a network-based approach and that the content-based approach appeared more promising. Therefore, we decided to focus on content-based approaches, which constitute the remainder of this thesis.

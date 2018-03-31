@@ -56,6 +56,8 @@
 
 
 
+
+
  
 
 
@@ -143,7 +145,7 @@ BoldItalicFont=ArnoPro-BoldItalic
 	\theauthor\\ to\\ The \@department\\ 
 	\vspace{12pt}
 	in partial fulfillment of the requirements\\ 
-	for the degree of\\ \@degree\\ 
+	for the joint degree of\\ \@degree\\ 
 	in the subjects of\\ \@field\\
 	\vspace{12pt}
 	\@university\\ \@universitycity, \@universitystate\\ 

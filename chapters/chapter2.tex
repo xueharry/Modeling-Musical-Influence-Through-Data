@@ -7,12 +7,12 @@ Till we crash up the whole database
 \chapter{Data}
 
 \section{Sources}
-We used influence and audio data from AllMusic\footnote{\url{https://www.allmusic.com/}}, cover song data from SecondHandSongs\footnote{\url{https://secondhandsongs.com/}}, collaboration data from MusicBrainz\footnote{\url{https://musicbrainz.org/}}. Additionally, song release year information was queried for via Discogs\footnote{\url{https://www.discogs.com/}}.
+We used influence and audio data from AllMusic\footnote{\url{https://www.allmusic.com/}}, cover song data from SecondHandSongs\footnote{\url{https://secondhandsongs.com/}}, and collaboration data from MusicBrainz\footnote{\url{https://musicbrainz.org/}}. Additionally, song release year information was queried for via Discogs\footnote{\url{https://www.discogs.com/}}.
 
 \subsection{AllMusic}
-AllMusic is the largest music database on the web, cataloging information on over 3 million albums and 30 million tracks, along with associated artist information and other metadata.
+True to its name, AllMusic is the largest music database on the web, cataloging information on over 3 million albums and 30 million tracks, along with associated artist information and other metadata.
 
-AllMusic maintains individual Artist pages, which among other information includes human curated data on a particular artist's \textit{influencers} (denoted as ``Influenced By'') and \textit{followers} (denoted as ``Followed By''). The site defines influencers as ``Artists that have had a direct musical influence on, or were an inspiration to, the selected artist, as determined by our music editors'' and followers as ``Artists who were influenced by the selected artist. This may be directly called  from research and interviews, or it may be a strong inference based on the opinion of the editors'' \footnote{\url{https://www.allmusic.com/faq}}.
+AllMusic maintains individual Artist pages, which among other information includes human-curated data on a particular artist's \textit{influencers} (denoted as ``Influenced By'') and \textit{followers} (denoted as ``Followed By''). The site defines influencers as ``Artists that have had a direct musical influence on, or were an inspiration to, the selected artist, as determined by our music editors'' and followers as ``Artists who were influenced by the selected artist. This may be directly called  from research and interviews, or it may be a strong inference based on the opinion of the editors'' \footnote{\url{https://www.allmusic.com/faq}}.
 
 \begin{figure}[H]
 \includegraphics[width=\textwidth]{figures/allmusic_influences.png}
@@ -33,7 +33,7 @@ SecondHandSongs (SHS) is a cover songs database with an emphasis on data quality
 MusicBrainz is an open database of music metadata on artists and recordings. While the database is quite extensive, we used it for the limited purpose of extracting collaboration relationships between musicians. In this case, two artists are said to have collaborated if there exists a recording on which the artists are both listed within the MusicBrainz database.
 
 \subsection{Discogs}
-Discogs is a crowdsourced database about audio recordings, with information on over 9 million releases by over 5 million artists. Though accuracy is a concern due to the nature of crowdsourcing, due to its easy to use public API, we used Discogs in order to collect song release year information.
+Discogs is a crowdsourced database about audio recordings, with information on over 9 million releases by over 5 million artists. Though accuracy is a concern because of the nature of crowdsourcing, due to its easy-to-use public API, we used Discogs in order to collect song release year information.
 
 \section{Collection}
 \subsection*{Scraping AllMusic}
@@ -46,7 +46,7 @@ A natural assumption of this approach is that starting the breadth-first search 
 We also collected audio data from AllMusic. Using the unique identifiers for each artist obtained during the scraping of influence relationships, we scraped AllMusic once again for available audio clips of songs by the artist. Since the number of audio clips we needed to scrape was much larger than the number of Artist pages visited during the initial BFS scraping process, we distributed audio scraping between multiple machines on Amazon Web Services (AWS).
 
 \subsection*{Scraping SecondHandSongs}
-SecondHandSongs has a public facing API, but unfortunately the API does not return recording date information, which was essential for our purposes. Therefore we scraped the individual Work pages from the website in order to have access to the sequence of covering artists and cover release dates for each original musical work. Since each work page on SHS is indexed numerically by id i.e. \url{https://secondhandsongs.com/work/<id>}, we queried all ids between 1 and 200000 (since not all ids are yet defined), distributing the scraping process between multiple machines on AWS.
+SecondHandSongs has a public facing API, but unfortunately the API does not return recording date information, which was essential for our purposes. Therefore we scraped the individual Work pages from the website in order to have access to the sequence of covering artists and cover release dates for each original musical work. Since each work page on SHS is indexed numerically by id (i.e. \url{https://secondhandsongs.com/work/<id>}), we queried all ids between 1 and 200000 (since not all ids are yet defined), distributing the scraping process between multiple machines on AWS.
 
 \subsection*{MusicBrainz Collaboration Data}
 An undirected graph of collaboration relationships between musicians who made a recording together in the MusicBrainz database has previously been constructed\footnote{\url{https://github.com/basimr/snoop-dogg-number/tree/master/graph}}, so we used it directly.
